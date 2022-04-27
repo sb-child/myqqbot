@@ -3,7 +3,7 @@ import time
 import rel
 import json
 import requests
-from . import reaction
+import reaction
 
 
 def send_msg(t: str, target: int, m: str):
