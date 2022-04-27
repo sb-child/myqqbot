@@ -38,11 +38,17 @@ def on_message(ws, message):
     else:
         print("- other type")
         return
+    rm = m["raw_message"]
     # process
-    if m["raw_message"] == ".ping":
+    if rm == ".ping":
         send_msg(m["message_type"], reply, "机器人已收到消息!")
+    elif rm == ".r t":
+        send_msg(m["message_type"], reply, "🤔")
+    elif rm == ".r tt":
+        send_msg(m["message_type"], reply, "🤔🤔")
     else:
         return
+    # delete
     delete_msg(m["message_id"])
 
 
