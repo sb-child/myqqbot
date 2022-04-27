@@ -3,6 +3,7 @@ import time
 import rel
 import json
 import requests
+from . import reaction
 
 
 def send_msg(t: str, target: int, m: str):
@@ -38,14 +39,12 @@ def on_message(ws, message):
     else:
         print("- other type")
         return
-    rm = m["raw_message"]
+    rm: str = m["raw_message"]
     # process
     if rm == ".ping":
         send_msg(m["message_type"], reply, "机器人已收到消息!")
-    elif rm == ".r t":
-        send_msg(m["message_type"], reply, "🤔")
-    elif rm == ".r tt":
-        send_msg(m["message_type"], reply, "🤔🤔")
+    elif rm.startswith(".r "):
+        send_msg(m["message_type"], reply, reaction.parse_sub_cmd(rm[3:]))
     else:
         return
     # delete
