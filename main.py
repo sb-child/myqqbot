@@ -4,21 +4,26 @@ import rel
 import json
 import requests
 import reaction
+import re
+
+cq_re = re.compile(r"(\[CQ:.*])?(.*)")
 
 
-def send_msg(t: str, target: int, m: str):
+def send_msg(t: str, target: int, m: str, cq=""):
     print("> ", requests.post("http://127.0.0.1:5700/send_msg", data={
         "message_type": t,
         "user_id": target,
         "group_id": target,
-        "message": ("> " + m) if m.find("[CQ:") == -1 else m,
+        "message": cq + (("> " + m) if m.find("[CQ:") == -1 else m),
         "auto_escape": False,
     }).json())
+
 
 def delete_msg(target: int):
     print("> ", requests.post("http://127.0.0.1:5700/delete_msg", data={
         "message_id": target,
     }).json())
+
 
 def on_message(ws, message):
     m = dict(json.loads(message))
@@ -40,12 +45,17 @@ def on_message(ws, message):
     else:
         print("- other type")
         return
-    rm: str = m["raw_message"]
+    rm_raw = cq_re.findall(m["raw_message"])
+    if len(rm_raw) == 0 or len(rm_raw[0]) != 2:
+        print("- not command")
+        return
+    rm: str = rm_raw[0][1]
+    rm_cq: str = rm_raw[0][0]
     # process
     if rm == ".ping":
-        send_msg(m["message_type"], reply, "机器人已收到消息!")
+        send_msg(m["message_type"], reply, "机器人已收到消息!", rm_cq)
     elif rm.startswith(".r "):
-        send_msg(m["message_type"], reply, reaction.parse_sub_cmd(rm[3:]))
+        send_msg(m["message_type"], reply, reaction.parse_sub_cmd(rm[3:]), rm_cq)
     else:
         return
     # delete
