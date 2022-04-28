@@ -7,14 +7,20 @@ import reaction
 import re
 
 cq_re = re.compile(r"(\[CQ:.*])?(.*)")
+cq_re_replys = re.compile(r"(\[CQ:reply,id=)(-?\d+)(.*?)]")
 
 
-def send_msg(t: str, target: int, m: str, cq=""):
+def send_msg(t: str, target: int, m: str, reply=""):
+    msg = ""
+    if reply != "":
+        msg += "[CQ:reply,id=" + reply + ",qq=" + str(target) + "]"
+    msg += ("> " + m) if m.find("[CQ:") == -1 else m
+    print("> send:", msg)
     print("> ", requests.post("http://127.0.0.1:5700/send_msg", data={
         "message_type": t,
         "user_id": target,
         "group_id": target,
-        "message": cq + (("> " + m) if m.find("[CQ:") == -1 else m),
+        "message": msg,
         "auto_escape": False,
     }).json())
 
@@ -49,13 +55,20 @@ def on_message(ws, message):
     if len(rm_raw) == 0 or len(rm_raw[0]) != 2:
         print("- not command")
         return
-    rm: str = rm_raw[0][1]
-    rm_cq: str = rm_raw[0][0]
+    print("- regex: ", rm_raw)
+    rm: str = rm_raw[0][1].strip()
+    rm_cq_reply = cq_re_replys.findall(rm_raw[0][0])
+    print("- reply regex: ", rm_cq_reply)
+    if len(rm_cq_reply) == 0 or len(rm_cq_reply[0]) != 3:
+        print("? not reply")
+        rm_cq_reply = ""
+    else:
+        rm_cq_reply = rm_cq_reply[0][1]
     # process
     if rm == ".ping":
-        send_msg(m["message_type"], reply, "机器人已收到消息!", rm_cq)
+        send_msg(m["message_type"], reply, "机器人已收到消息!", rm_cq_reply)
     elif rm.startswith(".r "):
-        send_msg(m["message_type"], reply, reaction.parse_sub_cmd(rm[3:]), rm_cq)
+        send_msg(m["message_type"], reply, reaction.parse_sub_cmd(rm[3:]), rm_cq_reply)
     else:
         return
     # delete
