@@ -1,9 +1,12 @@
 reaction = {
+    # emoji
     "thinking,思考": "\U0001F914",
-    "nya,喵": "\U0001F63A",
+    "nya,喵": "\U0001F431",
     "cat,猫": "\U0001F408",
     "happy,开心,高兴": "\U0001F642",
     "sad,伤心": "\U0001F625",
+    "cry,哭,呜": "\U0001F62D",
+    "heart,心": "\U00002764",
     "lgbt,rainbowflag,彩虹旗": "\U0001F3F3\U0000FE0F\U0000200D\U0001F308",
     "transgender,蓝粉白,跨性别旗": "\U0001F3F3\U0000FE0F\U0000200D\U000026A7\U0000FE0F",
     "transsymbol,跨性别符号": "\U000026A7",
@@ -80,4 +83,5 @@ def parse_sub_cmd(cmd: str):
 
 
 if __name__ == "__main__":
+    # test case
     print(parse_sub_cmd("sad2lg2transg3ny12t1抽2"))
