@@ -11,7 +11,8 @@ def send_msg(t: str, target: int, m: str):
         "message_type": t,
         "user_id": target,
         "group_id": target,
-        "message": "> " + m,
+        "message": ("> " + m) if m.find("[CQ:") == -1 else m,
+        "auto_escape": True,
     }).json())
 
 def delete_msg(target: int):
