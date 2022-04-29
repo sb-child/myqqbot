@@ -1,3 +1,24 @@
+import random
+
+
+def _hello():
+    return random.choice([
+        "您好", "您好啊", "喵喵~", "hello", "hi", "您好喵~",
+    ])
+
+
+def _ok():
+    return random.choice([
+        "嗯嗯", "嗯呢", "嗯喵~", "ok", "好的", "好喵~",
+    ])
+
+
+def _question():
+    return random.choice([
+        "怎么啦?", "怎么了?", "喵喵?", "发生什么事了?", "嗯?", "啊?",
+    ])
+
+
 reaction = {
     # emoji
     "thinking,思考": "\U0001F914",
@@ -16,6 +37,10 @@ reaction = {
     "myzmdsyn,mayezenmodoushiyaoniang,zmdsyn,zenmodoushiyaoniang,怎么都是药娘,妈耶怎么都是药娘": "[CQ:image,file=30be9c53363b71697dcaef1f23e3f967.image]",
     "wzmybclyn,wozenmoyebianchengleyaoniang,我怎么也变成了药娘": "[CQ:image,file=9ad80e62b88adef61e29c0a7b2608cb2.image]",
     "yncxrcrxxl,yaoniangchuxianrenchuanrenxianxiangle,药娘出现人传人现象了": "[CQ:image,file=d9867355752b44da8766105a25fc38c6.image]",
+    # text
+    ".hello,.你好,.您好": _hello,
+    ".ok,.好的": _ok,
+    ".question,.?,.怎么了": _question,
 }
 
 
@@ -24,6 +49,8 @@ def find_reaction(query: str):
         match = i.split(",")
         for k in match:
             if k.startswith(query):
+                if hasattr(j, '__call__'):
+                    return j()
                 return j
     return ""
 
