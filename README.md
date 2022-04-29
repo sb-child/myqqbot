@@ -11,7 +11,7 @@
 ### 1. 安装依赖
 
 ```bash
-pip uninstall websocket
+pip uninstall -y websocket
 pip install rel requests websocket-client
 ```
 
