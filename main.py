@@ -91,7 +91,7 @@ def on_message(ws, message):
         }).json()["data"]["nickname"]
         print(">> slash my name:", slash_my_name)
         slash_other_name = requests.post("http://127.0.0.1:5700/get_stranger_info", data={
-            "user_id": m["user_id"] if slash_other_sent else m["target_id"],
+            "user_id": m["target_id"] if slash_other_sent else m["user_id"],
         }).json()["data"]["nickname"]
         print(">> slash other name:", slash_other_name)
         if slash_other_sent and m["message_type"] == "private":
