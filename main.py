@@ -34,12 +34,21 @@ def delete_msg(target: int):
 def slash(message: str, my_name: str, other_name: str, other_sent: bool):
     # other sent: {other_name} {message}{了} {my_name}
     # me sent: {my_name} {message}{了} {other_name}
-    if not message.endswith("了"):
-        message += "了"
+    message_list = message.split(" ", 2)
+    if len(message_list) == 0:
+        message_list = [""]
+    if not message_list[0].endswith("了"):
+        message_list[0] += "了"
+    if len(message_list) == 2:
+        if not message_list[1].startswith("的"):
+            message_list[1] = "的" + message_list[1]
+        message_list[1] = " " + message_list[1]
+    if len(message_list) == 1:
+        message_list.append("")
     if other_sent:
-        return f"{other_name} {message} {my_name}"
+        return f"{other_name} {message_list[0]} {my_name}{message_list[1]}"
     else:
-        return f"{my_name} {message} {other_name}"
+        return f"{my_name} {message_list[0]} {other_name}{message_list[1]}"
 
 
 def on_message(ws, message):
