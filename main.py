@@ -31,6 +31,17 @@ def delete_msg(target: int):
     }).json())
 
 
+def slash(message: str, my_name: str, other_name: str, other_sent: bool):
+    # other sent: {other_name} {message}{了} {my_name}
+    # me sent: {my_name} {message}{了} {other_name}
+    if not message.endswith("了"):
+        message += "了"
+    if other_sent:
+        return f"{other_name} {message} {my_name}"
+    else:
+        return f"{my_name} {message} {other_name}"
+
+
 def on_message(ws, message):
     m = dict(json.loads(message))
     print(m)
@@ -40,9 +51,11 @@ def on_message(ws, message):
     if "self_id" not in m or "user_id" not in m:
         print("- bad type")
         return
+    slash_other_sent = False
     if m["self_id"] != m["user_id"]:
-        print("- not me")
-        return
+        print("- not me, check slash later")
+        slash_other_sent = True
+        # return
     reply = ""
     if m["message_type"] == "group":
         reply = m["group_id"]
@@ -65,10 +78,22 @@ def on_message(ws, message):
     else:
         rm_cq_reply = rm_cq_reply[0][1]
     # process
-    if rm == ".ping":
+    if rm == ".ping" and not slash_other_sent:
         send_msg(m["message_type"], reply, "机器人已收到消息!", rm_cq_reply)
-    elif rm.startswith(".r "):
-        send_msg(m["message_type"], reply, reaction.parse_sub_cmd(rm[3:]), rm_cq_reply)
+    elif rm.startswith(".r ") and not slash_other_sent:
+        send_msg(m["message_type"], reply,
+                 reaction.parse_sub_cmd(rm[3:]), rm_cq_reply)
+    elif rm.startswith("/"):
+        # check slash
+        slash_my_name = requests.post("http://127.0.0.1:5700/get_stranger_info", data={
+            "user_id": m["self_id"],
+        }).json()["nickname"]
+        slash_other_name = requests.post("http://127.0.0.1:5700/get_stranger_info", data={
+            "user_id": m["user_id"],
+        }).json()["nickname"]
+        send_msg(m["message_type"], reply,
+                 slash(rm[1:], slash_my_name, slash_other_name, slash_other_sent), rm_cq_reply)
+        return
     else:
         return
     # delete
