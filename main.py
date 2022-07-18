@@ -83,17 +83,20 @@ def on_message(ws, message):
     elif rm.startswith(".r ") and not slash_other_sent:
         send_msg(m["message_type"], reply,
                  reaction.parse_sub_cmd(rm[3:]), rm_cq_reply)
-    elif rm.startswith("/"):
+    elif rm.startswith("/") and m["message_type"] == "private":
         # check slash
         print(">> slash")
         slash_my_name = requests.post("http://127.0.0.1:5700/get_stranger_info", data={
             "user_id": m["self_id"],
-        }).json()["nickname"]
+        }).json()["data"]["nickname"]
         print(">> slash my name:", slash_my_name)
         slash_other_name = requests.post("http://127.0.0.1:5700/get_stranger_info", data={
-            "user_id": m["user_id"],
-        }).json()["nickname"]
+            "user_id": m["target_id"],
+        }).json()["data"]["nickname"]
         print(">> slash other name:", slash_other_name)
+        if slash_other_sent and m["message_type"] == "private":
+            reply = m["user_id"]
+        print(">> slash reply:", reply)
         send_msg(m["message_type"], reply,
                  slash(rm[1:], slash_my_name, slash_other_name, slash_other_sent), rm_cq_reply)
         return
