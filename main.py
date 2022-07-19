@@ -40,7 +40,9 @@ def slash(message: str, my_name: str, other_name: str, other_sent: bool):
     if not message_list[0].endswith("了"):
         message_list[0] += "了"
     if len(message_list) == 2:
-        if not message_list[1].startswith("的"):
+        if message_list[0].startswith("被") :
+            message_list[1] += "了"
+        elif not message_list[1].startswith("的"):
             message_list[1] = "的" + message_list[1]
         message_list[1] = " " + message_list[1]
     if len(message_list) == 1:
