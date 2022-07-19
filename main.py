@@ -32,8 +32,6 @@ def delete_msg(target: int):
 
 
 def slash(message: str, my_name: str, other_name: str, other_sent: bool):
-    # other sent: {other_name} {message}{了} {my_name}
-    # me sent: {my_name} {message}{了} {other_name}
     message_list = message.split(" ", 2)
     if len(message_list) == 0:
         message_list = [""]
