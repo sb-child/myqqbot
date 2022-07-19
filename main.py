@@ -49,6 +49,7 @@ def slash(message: str, my_name: str, other_name: str, other_sent: bool):
     if len(message_list) == 1:
         message_list.append("")
     if other_sent:
+        message_list[1] = message_list[1].replace("插了", "用玩具插了")
         return f"{other_name} {message_list[0]} {my_name}{message_list[1]}"
     else:
         return f"{my_name} {message_list[0]} {other_name}{message_list[1]}"
