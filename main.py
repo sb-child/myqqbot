@@ -5,6 +5,7 @@ import json
 import requests
 import reaction
 import re
+import ai
 
 cq_re = re.compile(r"(\[CQ:.*])?(.*)")
 cq_re_replys = re.compile(r"(\[CQ:reply,id=)(-?\d+)(.*?)]")
@@ -94,6 +95,9 @@ def on_message(ws, message):
     elif rm.startswith(".r ") and not slash_other_sent:
         send_msg(m["message_type"], reply,
                  reaction.parse_sub_cmd(rm[3:]), rm_cq_reply)
+    elif rm.startswith(".ai ") and not slash_other_sent:
+        send_msg(m["message_type"], reply, ai.execute(rm[4:]), rm_cq_reply)
+        pass
     elif rm.startswith("/") and m["message_type"] == "private":
         # check slash
         print(">> slash")
